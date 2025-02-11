@@ -1,0 +1,19 @@
+2025-02-03 19:09:58,692 - INFO - === Testing Parallel Trading ===
+2025-02-03 19:09:58,699 - INFO - 
+Executing scenario: basic_long_trade
+2025-02-03 19:09:59,295 - INFO - Branch trade - Wallet 0x123456: {'status': 'success', 'transaction_hash': 'tx_1738602598_7516', 'signature': 'mAvXV36JJYfMCAWBK8T4DLDOVrFK0KtBAm6MD/dyX1w=', 'timestamp': '2025-02-03T19:09:59.295689', 'details': {'asset': 'BTC', 'direction': 'long', 'size': 1000, 'wallet': '0x12345678...'}}
+2025-02-03 19:09:59,296 - INFO - Scenario basic_long_trade result: {'status': 'success', 'transaction_hash': 'tx_1738602598_7516', 'signature': 'mAvXV36JJYfMCAWBK8T4DLDOVrFK0KtBAm6MD/dyX1w=', 'timestamp': '2025-02-03T19:09:59.295689', 'details': {'asset': 'BTC', 'direction': 'long', 'size': 1000, 'wallet': '0x12345678...'}}
+2025-02-03 19:10:01,314 - INFO - 
+Executing scenario: basic_short_trade
+2025-02-03 19:10:03,200 - INFO - Branch trade - Wallet 0xabcdef: {'status': 'success', 'transaction_hash': 'tx_1738602601_2603', 'signature': 'TxlLLX5/Th89jKtYLvN9nwVqj89PZphPzjO8AsuFTNg=', 'timestamp': '2025-02-03T19:10:03.200745', 'details': {'asset': 'SOL', 'direction': 'short', 'size': 2000, 'wallet': '0xabcdef12...'}}
+2025-02-03 19:10:03,201 - INFO - Scenario basic_short_trade result: {'status': 'success', 'transaction_hash': 'tx_1738602601_2603', 'signature': 'TxlLLX5/Th89jKtYLvN9nwVqj89PZphPzjO8AsuFTNg=', 'timestamp': '2025-02-03T19:10:03.200745', 'details': {'asset': 'SOL', 'direction': 'short', 'size': 2000, 'wallet': '0xabcdef12...'}}
+2025-02-03 19:10:05,202 - INFO - 
+Executing scenario: insufficient_balance
+2025-02-03 19:10:05,202 - INFO - Branch trade - Wallet 0x223456: {'status': 'failed', 'error': 'Insufficient balance', 'timestamp': '2025-02-03T19:10:05.202154', 'tx_id': 'tx_1738602605_1818'}
+2025-02-03 19:10:05,202 - INFO - Scenario insufficient_balance result: {'status': 'failed', 'error': 'Insufficient balance', 'timestamp': '2025-02-03T19:10:05.202154', 'tx_id': 'tx_1738602605_1818'}
+2025-02-03 19:10:07,204 - INFO - 
+=== Testing Branch Trading ===
+2025-02-03 19:10:08,347 - INFO - Branch trade - Wallet 0x223456: {'status': 'success', 'transaction_hash': 'tx_1738602607_6572', 'signature': 'a9zIT22VW4HzaTyNIYFzVMLzG2MKpuwhgKx22DnBMok=', 'timestamp': '2025-02-03T19:10:08.347209', 'details': {'asset': 'BTC', 'direction': 'long', 'size': 11.022689349555373, 'wallet': '0x22345678...'}}
+2025-02-03 19:10:09,664 - INFO - Branch trade - Wallet 0x123456: {'status': 'success', 'transaction_hash': 'tx_1738602608_3299', 'signature': 'p55gldziwXN9g99GKD4HpzCbgwiT2KD6rz7W3ygx9zw=', 'timestamp': '2025-02-03T19:10:09.664965', 'details': {'asset': 'BTC', 'direction': 'long', 'size': 11.022689349555373, 'wallet': '0x12345678...'}}
+2025-02-03 19:10:09,834 - ERROR - Test scenario execution failed: HTTPConnectionPool(host='refresh.link', port=80): Max retries exceeded with url: /proxy1 (Caused by NameResolutionError("<urllib3.connection.HTTPConnection object at 0x00000274DE1DCD70>: Failed to resolve 'refresh.link' ([Errno 11002] getaddrinfo failed)"))
+2025-02-03 19:10:09,836 - INFO - Test scenarios completed

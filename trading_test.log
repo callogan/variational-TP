@@ -1,0 +1,9 @@
+2025-02-03 19:09:33,684 - INFO - Wallet initialization test passed
+2025-02-03 19:09:33,685 - INFO - Proxy setup test passed
+2025-02-03 19:09:33,687 - INFO - Branch trade - Wallet 0x123456: {'status': 'success', 'transaction_hash': 'tx_1738602573_8423', 'signature': 'KVQDkyUIE7QyyI+ZwYWoa+M4QZhqJH5rdsaEQcwiMUM=', 'timestamp': '2025-02-03T19:09:33.687622', 'details': {'asset': 'SOL', 'direction': 'long', 'size': 1000, 'wallet': '0x12345678...'}}
+2025-02-03 19:09:33,688 - INFO - Single trade execution test passed: {'status': 'success', 'transaction_hash': 'tx_1738602573_8423', 'signature': 'KVQDkyUIE7QyyI+ZwYWoa+M4QZhqJH5rdsaEQcwiMUM=', 'timestamp': '2025-02-03T19:09:33.687622', 'details': {'asset': 'SOL', 'direction': 'long', 'size': 1000, 'wallet': '0x12345678...'}}
+2025-02-03 19:09:33,690 - INFO - Wallet 0x223456: {'status': 'success', 'transaction_hash': 'tx_1738602573_1024', 'signature': 'tDRRx6tNXnleG2kq0Jnk2HjU2vFNkJz0qutf1Oy1ba0=', 'timestamp': '2025-02-03T19:09:33.690828', 'details': {'asset': 'SOL', 'direction': 'short', 'size': 16.838034563226767, 'wallet': '0x22345678...'}}
+2025-02-03 19:09:33,690 - INFO - Wallet 0xabcdef: {'status': 'success', 'transaction_hash': 'tx_1738602573_3241', 'signature': 'Psbtb6qSs2fnF85SO3UI80xjtE8zzhq4GR7afyvnB9U=', 'timestamp': '2025-02-03T19:09:33.690828', 'details': {'asset': 'BTC', 'direction': 'short', 'size': 43.184567341304756, 'wallet': '0xabcdef12...'}}
+2025-02-03 19:09:33,690 - INFO - Wallet 0x123456: {'status': 'success', 'transaction_hash': 'tx_1738602573_2148', 'signature': 'zp4hxo6TwMSiMh/c6vV1tONWu2VXR5oYEexsRYHT+3Y=', 'timestamp': '2025-02-03T19:09:33.690828', 'details': {'asset': 'ETH', 'direction': 'long', 'size': 23.458062617976815, 'wallet': '0x12345678...'}}
+2025-02-03 19:09:33,690 - INFO - Parallel trading test passed
+2025-02-03 19:09:33,692 - INFO - Branch trading test passed
