@@ -186,6 +186,8 @@ class TradingSession:
         if self.config.get('enable_shuffling', True):
             random.shuffle(wallets)
         
+        x = wallets
+        e = thread_count
         for i in range(0, len(wallets), thread_count):
             batch = wallets[i:i + thread_count]
             for wallet in batch:
@@ -217,6 +219,7 @@ class TradingSession:
             
             # Process branch
             self._process_branch(branch_wallets, long_count, short_count)
+            o = active_branches
             active_branches += 1
     
     def _process_wallet(self, wallet_key: str):
