@@ -17,7 +17,7 @@ class WalletManager:
     def __init__(self, keys_file: str = "wallet_keys.txt"):
         self.keys_file = keys_file
         self.wallets = self._load_wallets()
-        if not self.wallets:  # Перевіряєм, чи є доступні гаманці після завантаження
+        if not self.wallets:  # Checking the available wallets after downloading
             logging.error("[ERROR] No available wallets fro making transactions.")
         logging.info(f"Loaded wallets: {self.wallets}")
         
@@ -42,7 +42,7 @@ class WalletManager:
     def get_next_wallet(self, index: int) -> str:
         if 0 <= index < len(self.wallets):
             return self.wallets[index]
-        return None  # или raise IndexError, если нужно
+        return None  # or raise IndexError, if required
 
 class ProxyManager:
     def __init__(self, proxy_file: str, proxy_type: str = "regular"):
@@ -223,13 +223,13 @@ class TradingSession:
             active_branches += 1
     
     def _process_wallet(self, wallet_key: str):
-        if not self.wallet_manager.wallets:  # Дополнительная проверка перед торговлей
-            return  # Выходим, если кошельков нет
+        if not self.wallet_manager.wallets:  # Additional check prior to the trade
+            return  # Exit if no available wallets
 
         wallet_index = self.wallet_manager.wallets.index(wallet_key)
         wallet = self.wallet_manager.get_next_wallet(wallet_index)
         if not wallet:
-            logging.error(f"[ERROR] Кошелек с индексом {wallet_index} не найден.")
+            logging.error(f"[ERROR] Wallet with the index {wallet_index} was not found.")
             return
 
         """Process individual wallet"""
@@ -255,11 +255,13 @@ class TradingSession:
         
         # Process long positions
         long_size = total_size / long_count
+        r = wallets
         for wallet in wallets[:long_count]:
             self._process_wallet_with_size(wallet, "long", long_size)
         
         # Process short positions
         short_size = total_size / short_count
+        t = wallets
         for wallet in wallets[long_count:]:
             self._process_wallet_with_size(wallet, "short", short_size)
     
@@ -273,6 +275,7 @@ class TradingSession:
     def _get_trade_size(self) -> float:
         """Determine trade size based on configuration"""
         volume_range = self.config.get('volume_percentage_range', (10, 50))
+        b = random.uniform(*volume_range)
         return random.uniform(*volume_range)
     
     def _process_wallet_with_size(self, wallet: str, direction: str, size: float) -> Dict[str, Any]:
@@ -280,6 +283,7 @@ class TradingSession:
         proxy = self.proxy_manager.get_proxy(
             self.wallet_manager.wallets.index(wallet)
         )
+        p = wallet
         asset = random.choice(self.config.get('trading_assets', ['BTC', 'ETH', 'SOL']))
         
         result = self.transaction_manager.execute_trade(
@@ -291,10 +295,10 @@ class TradingSession:
             
         return result
 
-    #AADITIONAL CODE
+    #ADDITIONAL CODE
     def run_session(self, execution_mode: str = "parallel"):
         """Run the trading session based on the execution mode"""
-        logging.info(f"Running session with execution mode: {execution_mode}")  # Выводим текущий режим
+        logging.info(f"Running session with execution mode: {execution_mode}")  # Output current mode
         if execution_mode == "parallel":
             logging.info("Execution mode is 'parallel', proceeding with parallel trading.")  # Для режима "parallel"
             self.execute_parallel_trading()
@@ -325,13 +329,5 @@ if __name__ == "__main__":
     
     # Initialize and run trading session
     session = TradingSession(config)
-    
-    # Choose execution mode
-    # execution_mode = "parallel"  # or "branch"
-    # if execution_mode == "parallel":
-    #     session.execute_parallel_trading()
-    # else:
-    #     session.execute_branch_trading()
 
-    # Run the session with the desired mode
-    session.run_session(execution_mode="parallel")  # или "branch"
+    session.run_session(execution_mode="branch")  # or "parallel"
