@@ -216,7 +216,8 @@ class TradingSession:
             # Split into long and short positions
             long_count = random.randint(1, branch_size - 1)
             short_count = branch_size - long_count
-            
+
+            w = branch_wallets
             # Process branch
             self._process_branch(branch_wallets, long_count, short_count)
             o = active_branches
