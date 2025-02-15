@@ -253,19 +253,19 @@ class TradingSession:
     def _process_branch(self, wallets: List[str], long_count: int, short_count: int):
         """Process branch of wallets"""
         total_size = self._get_trade_size()
-        
+
         # Process long positions
-        long_size = total_size / long_count
-        r = wallets
-        for wallet in wallets[:long_count]:
-            self._process_wallet_with_size(wallet, "long", long_size)
-        
+        if long_count > 0:
+            long_size = total_size / long_count
+            for wallet in wallets[:long_count]:
+                self._process_wallet_with_size(wallet, "long", long_size)
+
         # Process short positions
-        short_size = total_size / short_count
-        t = wallets
-        for wallet in wallets[long_count:]:
-            self._process_wallet_with_size(wallet, "short", short_size)
-    
+        if short_count > 0:
+            short_size = total_size / short_count
+            for wallet in wallets[long_count:]:
+                self._process_wallet_with_size(wallet, "short", short_size)
+
     def _get_trade_direction(self) -> str:
         """Determine trade direction based on configuration"""
         direction_config = self.config.get('position_direction', 'random')
