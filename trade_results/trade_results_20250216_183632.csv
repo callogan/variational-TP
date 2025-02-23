@@ -1,0 +1,2 @@
+timestamp,wallet,asset,direction,size,status,transaction_hash,error
+2025-02-16T18:36:33.476129,0x4e3f2d27b44c0f18b1c94a1834e3d94aef4cd0d2ed4c722245688c83a53f0a1b,ETH,long,25.212396916175486,success,tx_1739723792_6770,

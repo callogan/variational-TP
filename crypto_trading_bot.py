@@ -11,6 +11,13 @@ import hashlib
 from base64 import b64encode
 import csv
 
+# import csv_writer
+from csv_writer import CSVWriter  # Import the CSV writer module
+from csv_recorder import CSVRecorder  # Import the CSVRecorder class
+
+active_branches = 0
+thread_count = 0
+
 # Setup logging configuration
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -161,7 +168,7 @@ class TransactionManager:
 
 
 class TradingSession:
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict, active_braches):
         self.config = config
         self.wallet_manager = WalletManager(config.get('keys_file', 'wallet_keys.txt'))
         # var.wallet_manager
@@ -170,8 +177,13 @@ class TradingSession:
             config.get('proxy_type', 'regular')
         )
         self.transaction_manager = TransactionManager()
+        self.transaction_manager = TransactionManager()
         self.setup_logging()
         self.csv_file = self._setup_csv_file()
+        self.csv_recorder = CSVRecorder(active_branches, thread_count)  # Create an instance of CSVRecorder
+        self.result = None
+        self.wallet = None
+        self.active_branches = active_braches
 
     def setup_logging(self):
         """Setup logging configuration"""
@@ -230,8 +242,11 @@ class TradingSession:
             writer.writerow(row)
             logging.info(f"Recorded trade result to CSV: {row}")
 
+    # CREATE CERTAIN CLASS, CREATE SPV METHOD WITHIN IT ... CALL METHOD WITH FILE PATH
+    # ТО ЕСТЬ РЕАЛИЗАЦИЯ ЧЕРЕЗ SELF А НЕ ЧЕРЕЗ GLOBAL
     def execute_parallel_trading(self):
         """Execute trading in parallel threads"""
+        global thread_count
         thread_count = self.config.get('thread_count', 10)
         # delay_range = self.config.get('launch_delay', (0, 3600))#SHORTEN MAX DELAY RANGE
         delay_range = self.config.get('launch_delay', (0, 20))
@@ -249,7 +264,10 @@ class TradingSession:
                 time.sleep(delay)
                 self._process_wallet(wallet)
 
-    def execute_branch_trading(self):
+        self.csv_recorder.thread_count = thread_count  # Set thread count
+        self.csv_recorder.record_to_csv('trading_data.csv', 'Parallel trading executed')  # Record to CSV
+
+    def execute_branch_trading(self, result, wallet):
         """Execute trading with branches"""
         branch_range = self.config.get('branch_wallet_range', (2, 5))
         max_branches = self.config.get('max_parallel_branches', 5)
@@ -258,6 +276,7 @@ class TradingSession:
         if self.config.get('enable_shuffling', True):
             random.shuffle(wallets)
 
+        # global active_branches
         active_branches = 0
         while wallets and active_branches < max_branches:
             branch_size = random.randint(*branch_range)
@@ -276,6 +295,15 @@ class TradingSession:
             self._process_branch(branch_wallets, long_count, short_count)
             o = active_branches
             active_branches += 1
+
+        
+        self.csv_recorder.active_branches = active_branches  # Set active branches
+        self.csv_recorder.record_to_csv(
+             'trading_data.csv',
+            'Branch trading executed',
+             result,
+             wallet
+        )  # Record to CSV
 
     def _process_wallet(self, wallet_key: str):
         if not self.wallet_manager.wallets:  # Additional check prior to the trade
@@ -303,9 +331,12 @@ class TradingSession:
 
         # Record trade result to CSV
         self._record_trade_to_csv(result, wallet_key)
+        self._add_record_trade_to_csv(result, wallet_key)
 
         if self.config.get('enable_logs', True):
             logging.info(f"Wallet {wallet_key[:8]}: {result}")
+
+        return result, wallet
 
     def _process_branch(self, wallets: List[str], long_count: int, short_count: int):
         """Process branch of wallets"""
@@ -350,22 +381,45 @@ class TradingSession:
 
         # Record trade result to CSV
         self._record_trade_to_csv(result, wallet)
+        #
+        # self._add_record_trade_to_csv(result, wallet)
 
         if self.config.get('enable_logs', True):
             logging.info(f"Branch trade - Wallet {wallet[:8]}: {result}")
 
         return result
 
+    def _add_record_trade_to_csv(self, result: Dict[str, Any], wallet: str):
+        CSVWriter.add_record(result, wallet, self.csv_file, active_branches, thread_count)  # Use CSVWriter
+
+    # def _add_record_trade_to_csv(self, result: Dict[str, Any], wallet: str):
+    #     """Add record trade result to CSV file"""
+    #     with open(self.csv_file, 'a', newline='') as csvfile:
+    #         writer = csv.DictWriter(csvfile, fieldnames=[
+    #             'active_branches', 'thread_count'
+    #         ])
+    #
+    #         # Prepare row data
+    #         row = {
+    #             'active_branches': active_branches,
+    #             'thread_count': thread_count
+    #         }
+    #
+    #         #SOME LOGIC OF RECEIVING VALUES FROM FUNCTIONS
+    #
+    #         writer.writerow(row)
+    #         logging.info(f"Recorded trade result to CSV: {row}")
+
     # ADDITIONAL CODE
-    def run_session(self, execution_mode: str = "parallel"):
+    def run_session(self, result, wallet, execution_mode: str = "branch"):
         """Run the trading session based on the execution mode"""
         logging.info(f"Running session with execution mode: {execution_mode}")  # Output current mode
-        if execution_mode == "parallel":
+        if execution_mode == "branch":
+            logging.info("Execution mode is 'branch', proceeding with branch trading.")  # Для режима "branch"
+            self.execute_branch_trading(result, wallet)
+        elif execution_mode == "parallel":
             logging.info("Execution mode is 'parallel', proceeding with parallel trading.")  # Для режима "parallel"
             self.execute_parallel_trading()
-        elif execution_mode == "branch":
-            logging.info("Execution mode is 'branch', proceeding with branch trading.")  # Для режима "branch"
-            self.execute_branch_trading()
         else:
             logging.error(f"Invalid execution mode: {execution_mode}")  # Если режим некорректный
             logging.error(f"Invalid execution mode: {execution_mode}")
@@ -391,4 +445,7 @@ if __name__ == "__main__":
     # Initialize and run trading session
     session = TradingSession(config)
 
-    session.run_session(execution_mode="branch")  # or "parallel"
+    # Получаем result и wallet из методов класса
+    # result, wallet = session._process_wallet()
+
+    session.run_session(result, wallet,execution_mode="branch", )  # or "parallel"

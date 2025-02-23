@@ -238,3 +238,81 @@ class TestTradingSession(unittest.TestCase):
             call(1, 1),  # Second call for long_count
         ])
         self.assertEqual(mock_random_randint.call_count, 2)
+
+    @patch('crypto_trading_bot.time.sleep', return_value=None)
+    def test_run_session_empty_wallets(self, mock_sleep):
+        """Test the session with an empty wallet list."""
+        wallet_manager_mock = MagicMock()
+        transaction_manager_mock = MagicMock()
+
+        session = TradingSession(self.config)
+        session.wallet_manager = wallet_manager_mock
+        session.transaction_manager = transaction_manager_mock
+
+        wallet_manager_mock.get_next_wallet.return_value = None  # No wallets available
+
+        session.run_session("branch")
+        transaction_manager_mock.execute_trade.assert_not_called()  # No trades should be executed
+
+    @patch('crypto_trading_bot.time.sleep', return_value=None)
+    def test_run_session_single_wallet(self, mock_sleep):
+        """Test the session with a single wallet available."""
+        wallet_manager_mock = MagicMock()
+        proxy_manager_mock = MagicMock()
+        transaction_manager_mock = MagicMock()
+
+        session = TradingSession(self.config)
+        session.wallet_manager = wallet_manager_mock
+        session.proxy_manager = proxy_manager_mock
+        session.transaction_manager = transaction_manager_mock
+
+        wallet_manager_mock.get_next_wallet.return_value = ('wallet_1', 'key_1')  # One wallet available
+        proxy_manager_mock.get_proxy.return_value = {'ip_port': '127.0.0.1:8080', 'auth': 'user1:pass1'}
+
+        session.run_session("branch")
+        transaction_manager_mock.execute_trade.assert_called_once()  # One trade should be executed
+
+    @patch('crypto_trading_bot.time.sleep', return_value=None)
+    def test_run_session_multiple_wallets_no_proxies(self, mock_sleep):
+        """Test the session with multiple wallets but no proxies."""
+        wallet_manager_mock = MagicMock()
+        proxy_manager_mock = MagicMock()
+        transaction_manager_mock = MagicMock()
+
+        session = TradingSession(self.config)
+        session.wallet_manager = wallet_manager_mock
+        session.proxy_manager = proxy_manager_mock
+        session.transaction_manager = transaction_manager_mock
+
+        mock_wallets = [('wallet_1', 'key_1'), ('wallet_2', 'key_2')]
+        wallet_manager_mock.wallets = mock_wallets
+        wallet_manager_mock.get_next_wallet.side_effect = lambda index: mock_wallets[index] if index < len(mock_wallets) else None
+
+        proxy_manager_mock.get_proxy.return_value = None  # No proxies available
+
+        session.run_session("branch")
+        transaction_manager_mock.execute_trade.assert_not_called()  # No trades should be executed
+
+    @patch('crypto_trading_bot.time.sleep', return_value=None)
+    def test_run_session_multiple_wallets_multiple_proxies(self, mock_sleep):
+        """Test the session with multiple wallets and multiple proxies."""
+        wallet_manager_mock = MagicMock()
+        proxy_manager_mock = MagicMock()
+        transaction_manager_mock = MagicMock()
+
+        session = TradingSession(self.config)
+        session.wallet_manager = wallet_manager_mock
+        session.proxy_manager = proxy_manager_mock
+        session.transaction_manager = transaction_manager_mock
+
+        mock_wallets = [('wallet_1', 'key_1'), ('wallet_2', 'key_2')]
+        wallet_manager_mock.wallets = mock_wallets
+        wallet_manager_mock.get_next_wallet.side_effect = lambda index: mock_wallets[index] if index < len(mock_wallets) else None
+
+        proxy_manager_mock.get_proxy.side_effect = [
+            {'ip_port': '127.0.0.1:8080', 'auth': 'user1:pass1'},
+            {'ip_port': '127.0.0.1:8081', 'auth': 'user2:pass2'}
+        ]  # Two proxies available
+
+        session.run_session("branch")
+        self.assertEqual(transaction_manager_mock.execute_trade.call_count, len(mock_wallets))  # Trades should be executed for each wallet

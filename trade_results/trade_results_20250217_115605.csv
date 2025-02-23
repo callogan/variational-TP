@@ -1,0 +1,2 @@
+timestamp,wallet,asset,direction,size,status,transaction_hash,error
+2025-02-17T11:56:06.477308,0x4e3f2d27b44c0f18b1c94a1834e3d94aef4cd0d2ed4c722245688c83a53f0a1b,BTC,long,20.442870216002678,success,tx_1739786165_7473,
