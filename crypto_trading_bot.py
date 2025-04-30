@@ -255,8 +255,6 @@ class TradingSession:
         if self.config.get('enable_shuffling', True):
             random.shuffle(wallets)
 
-        x = wallets
-        e = thread_count
         for i in range(0, len(wallets), thread_count):
             batch = wallets[i:i + thread_count]
             for wallet in batch:
